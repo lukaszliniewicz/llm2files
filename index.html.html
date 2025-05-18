@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>llm2files - Parse LLM Chat Output Into Files and Folders | Extract Code from AI Responses</title>
+    <meta name="title" content="llm2files - Parse LLM Chat Output Into Files and Folders | Extract Code from AI Responses">
+    <meta name="description" content="Free online tool to parse and extract files from LLM chat outputs (ChatGPT, Claude, etc.). Convert delimited text into organized file structures and download as ZIP. Perfect for developers working with AI-generated code.">
+    <meta name="keywords" content="LLM files parser, ChatGPT code extractor, Claude file parser, AI code organizer, LLM output converter, extract files from chat, AI response parser, code structure generator, LLM delimiter parser, AI development tools">
+    <meta name="author" content="Lukasz Liniewicz">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://llm2files.liniewicz.info/">
+    <meta property="og:title" content="llm2files - Parse LLM Chat Output Into Files and Folders">
+    <meta property="og:description" content="Free online tool to parse and extract files from LLM chat outputs. Convert AI-generated code with delimiters into organized file structures and download as ZIP.">
+    <meta property="og:image" content="https://llm2files.liniewicz.info/favicon/android-chrome-512x512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:site_name" content="llm2files">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://llm2files.liniewicz.info/">
+    <meta property="twitter:title" content="llm2files - Parse LLM Chat Output Into Files and Folders">
+    <meta property="twitter:description" content="Free online tool to parse and extract files from LLM chat outputs. Convert AI-generated code with delimiters into organized file structures and download as ZIP.">
+    <meta property="twitter:image" content="https://llm2files.liniewicz.info/favicon/android-chrome-512x512.png">
+    <meta property="twitter:creator" content="@lukaszliniewicz">
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Additional SEO Meta Tags -->
+    <link rel="canonical" href="https://llm2files.liniewicz.info/">
+    <meta name="application-name" content="llm2files">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="llm2files">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-starturl" content="/">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "llm2files",
+        "url": "https://llm2files.liniewicz.info/",
+        "description": "Free online tool to parse and extract files from LLM chat outputs. Convert AI-generated code with delimiters into organized file structures and download as ZIP.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "author": {
+            "@type": "Person",
+            "name": "Lukasz Liniewicz"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Parse LLM chat output with file delimiters",
+            "Extract multiple files from single text input",
+            "Visual file tree representation",
+            "File content preview",
+            "Download organized files as ZIP archive",
+            "Support for nested folder structures",
+            "Dark and light theme support"
+        ],
+        "browserRequirements": "Requires JavaScript. Compatible with modern browsers.",
+        "softwareVersion": "1.0"
+    }
+    </script>
+    
+    <!-- JSZip for creating ZIP files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver for downloading files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Roboto Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Light theme variables */
+            --bg-color: #f7f7f7;
+            --panel-bg: white;
+            --text-color: #333;
+            --border-color: #ddd;
+            --hover-bg: #f0f0f0;
+            --active-bg: #e8f4f8;
+            --folder-icon-color: #f8d775;
+            --file-icon-color: #75aaf8;
+            --button-text: black;
+            --button-border: black;
+            --button-hover: rgba(0,0,0,0.05);
+            --toggle-bg: #777777;
+            --toggle-color: white;
+            --preview-content-bg: white;
+            --preview-content-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --no-preview-color: #888;
+            --tree-border-color: #ccc;
+            --success-bg: rgba(40, 167, 69, 0.2);
+            --success-border: #28a745;
+            --success-text: #28a745;
+            --tooltip-bg: #f0f0f0;
+            /* Modal colors */
+            --modal-bg: white;
+            --modal-overlay: rgba(0, 0, 0, 0.5);
+            --modal-border: #ddd;
+            /* Scrollbar colors - light theme */
+            --scrollbar-bg: #f0f0f0;
+            --scrollbar-thumb: #cccccc;
+            --scrollbar-thumb-hover: #aaaaaa;
+        }
+        
+        /* Dark theme */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --panel-bg: #2c2c2c;
+                --text-color: #e0e0e0;
+                --border-color: #444;
+                --hover-bg: #3a3a3a;
+                --active-bg: #3a4a55;
+                --folder-icon-color: #f8d775;
+                --file-icon-color: #75aaf8;
+                --button-text: #e0e0e0;
+                --button-border: #777;
+                --button-hover: rgba(255,255,255,0.1);
+                --toggle-bg: #555;
+                --toggle-color: #e0e0e0;
+                --preview-content-bg: #2c2c2c;
+                --preview-content-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                --no-preview-color: #999;
+                --tree-border-color: #555;
+                --success-bg: rgba(40, 167, 69, 0.15);
+                --success-border: #28a745;
+                --success-text: #28a745;
+                --tooltip-bg: #3a3a3a;
+                /* Modal colors */
+                --modal-bg: #2c2c2c;
+                --modal-overlay: rgba(0, 0, 0, 0.7);
+                --modal-border: #555;
+                /* Scrollbar colors - dark theme */
+                --scrollbar-bg: #222222;
+                --scrollbar-thumb: #444444;
+                --scrollbar-thumb-hover: #555555;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 5px;
+            border: 2px solid var(--scrollbar-bg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--scrollbar-bg);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-color);
+        }
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+        
+        /* Left Panel - Settings */
+        .settings-panel {
+            width: 400px;
+            background-color: var(--panel-bg);
+            padding: 10px 40px 10px 10px;
+            border-right: 1px solid var(--border-color);
+            transition: width 0.3s ease, padding 0.3s ease; 
+            overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
+            position: relative; 
+            flex-shrink: 0; 
+        }
+        .settings-panel.collapsed {
+            width: 30px; 
+            padding: 0;
+			overflow: hidden;
+        }
+        .toggle-settings {
+			position: absolute;
+			top: 0;
+			right: 0;
+			background-color: var(--toggle-bg);
+			border-left: none;
+			padding: 15px 4px;
+			width: 30px;
+			writing-mode: vertical-rl;
+			text-orientation: mixed;
+			font-size: 12px;
+			font-weight: 400;
+			cursor: pointer;
+			z-index: 1000;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--toggle-color);
+			height: 100%;
+        }
+        .settings-content {
+            flex-grow: 1;
+            visibility: visible; 
+            opacity: 1;
+            transition: opacity 0.1s ease 0.1s, visibility 0.1s ease 0.1s; 
+        }
+        .settings-panel.collapsed .settings-content {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.1s ease, visibility 0.1s ease; 
+        }
+        
+        /* Middle Panel - File Tree */
+        .tree-panel {
+            width: 300px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 15px;
+            flex-shrink: 0; 
+            transition: width 0.3s ease; 
+        }
+        
+        /* Right Panel - Preview */
+        .preview-panel {
+            flex-grow: 1; 
+            background-color: var(--bg-color);
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        h1, h2, h3 {
+            color: var(--text-color);
+            margin-top: 0;
+        }
+        
+        .panel-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-header h2 {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 300;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-header h2 i {
+            margin-right: 10px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: vertical;
+            background-color: var(--panel-bg);
+            color: var(--text-color);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-row button {
+            flex: 1;
+        }
+        
+        button {
+            background-color: transparent;
+            color: var(--button-text);
+            border: 1px solid var(--button-border);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+			height:100%;
+        }
+        
+        button:hover {
+            background-color: var(--button-hover);
+        }
+        
+        button:disabled {
+            color: var(--no-preview-color);
+            border-color: var(--no-preview-color);
+            cursor: not-allowed;
+        }
+        
+        .file-tree {
+            margin-top: 10px;
+        }
+        
+        .folder {
+            margin-bottom: 5px;
+        }
+        
+        .folder-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 5px;
+            border-radius: 4px;
+        }
+        
+        .folder-header:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        .folder-icon {
+            margin-right: 8px;
+            color: var(--folder-icon-color);
+            width: 18px;
+            text-align: center;
+        }
+        
+        .folder-content {
+            margin-left: 15px;
+            padding-left: 10px;
+            border-left: 1px dotted var(--tree-border-color);
+            display: block; /* Changed from 'none' to 'block' to make folders expanded by default */
+        }
+        
+        .file {
+            margin: 5px 0;
+        }
+        
+        .file-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 5px;
+            border-radius: 4px;
+        }
+        
+        .file-header:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        .file-header.active {
+            background-color: var(--active-bg);
+        }
+        
+        .file-icon {
+            margin-right: 8px;
+            color: var(--file-icon-color);
+            width: 18px;
+            text-align: center;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            flex-grow: 1;
+            background-color: var(--panel-bg);
+            color: var(--text-color);
+        }
+        
+        .preview-content {
+            padding: 20px;
+            background-color: var(--preview-content-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--preview-content-shadow);
+        }
+        
+        .file-preview {
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--panel-bg);
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin-top: 10px;
+            color: var(--text-color);
+        }
+        
+        .no-preview {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: var(--no-preview-color);
+            font-size: 18px;
+            font-style: italic;
+			gap: 10px;
+        }
+        
+        .tree-actions {
+            margin: 15px 0;
+        }
+
+        /* Custom file input styling */
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+        }
+
+        .file-input-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: transparent;
+            color: var(--button-text);
+            border: 1px solid var(--button-border);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 0;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .file-input-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .file-name {
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        /* Copy button tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            flex: 1;
+            margin-bottom: 10px;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 320px;
+            background-color: var(--tooltip-bg);
+            color: var(--text-color);
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1;
+            top: 120%;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: normal;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 20px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent var(--border-color) transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Success message for copy - floating at bottom of screen */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+            padding: 10px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .notification.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Privacy disclaimer */
+        .privacy-disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: var(--hover-bg);
+            border-left: 4px solid var(--file-icon-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .privacy-disclaimer p {
+            margin: 0;
+            color: var(--text-color);
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .privacy-disclaimer i {
+            color: var(--file-icon-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-overlay);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: var(--modal-bg);
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid var(--modal-border);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .modal-body {
+            padding: 30px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        .modal-body h3 {
+            color: var(--text-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+
+        .modal-body ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .modal-body code {
+            background-color: var(--hover-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .modal-body .example {
+            background-color: var(--hover-bg);
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--file-icon-color);
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        /* Animation for modal */
+        .modal.show {
+            display: block;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settings-panel"> 
+            <div class="toggle-settings" id="toggle-settings">
+                <span id="toggle-label">Collapse</span>
+            </div>
+            <div class="settings-content">
+                <div class="panel-header">
+                    <h2><i class="fas fa-cog"></i>Input</h2>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-methods">
+                        <div>
+                            <div class="button-row">
+                                <div class="tooltip">
+                                    <button id="copy-prompt-btn">
+                                        <i class="fas fa-copy"></i> Copy Prompt
+                                    </button>
+                                    <span class="tooltiptext">IMPORTANT: If you choose to structure the output as multiple files, please output the code of all files in a SINGLE code block, inserting the names of files above their code as -----filename.ext----- or -----somefolder/filename.ext-----, -----somefolder/anotherfolder/filename.ext-----, and so on. Thank you very much.</span>
+                                </div>
+                                <button id="how-to-use-btn">
+                                    <i class="fas fa-question-circle"></i> How to Use
+                                </button>
+                            </div>
+                            <label for="text-input">Paste text with file delimiters:</label>
+                            <textarea id="text-input" placeholder="Paste text with format like:
+-----index.html-----
+<html>...</html>
+-----assets/css/style.css-----
+..."></textarea>
+                        </div>
+                        <div>
+                            <label for="file-upload">Or upload a text file:</label>
+                            <div class="file-input-container">
+                                <input type="file" id="file-upload" accept=".txt">
+                                <label for="file-upload" class="file-input-button">
+                                    <i class="fas fa-upload"></i> Choose File
+                                </label>
+                                <div id="file-name" class="file-name"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="process-btn">
+                            <i class="fas fa-cogs"></i> Process Input
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Privacy disclaimer -->
+                <div class="privacy-disclaimer">
+                    <p><i class="fas fa-shield-alt"></i> <strong>Privacy:</strong> All files are processed locally in your browser. No data is sent to any server.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tree Panel -->
+        <div class="tree-panel" id="tree-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-folder-tree"></i> File Tree</h2>
+            </div>
+            <div class="tree-actions">
+                <div class="input-group">
+                    <label for="root-folder">Folder name:</label>
+                    <input type="text" id="root-folder" value="project">
+                </div>
+                <button id="download-btn" disabled>
+                    <i class="fas fa-download"></i> Download ZIP
+                </button>
+            </div>
+            <div id="file-tree" class="file-tree">
+                <div class="no-preview">
+                    <i class="fas fa-folder-open"></i> Process input to see files
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Panel -->
+        <div class="preview-panel" id="preview-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-eye"></i> File Preview</h2>
+            </div>
+            <div id="preview-content" class="preview-content">
+                <div class="no-preview">
+                    <i class="fas fa-file-alt"></i> Select a file to preview content
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> How to Use llm2files</h2>
+                <button class="modal-close" id="modal-close-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <h3><i class="fas fa-play-circle"></i> Getting Started</h3>
+                <p>llm2files helps you extract and organize files from LLM chat outputs like ChatGPT or Claude responses. When an AI generates multiple files in a single response, this tool can parse and structure them for easy download.</p>
+
+                <h3><i class="fas fa-clipboard"></i> Step 1: Get the Right Format</h3>
+                <p>First, copy the prompt using the "Copy Prompt" button and paste it into your chat with the AI. This ensures the AI responds with the proper file delimiter format.</p>
+
+                <h3><i class="fas fa-code"></i> Step 2: Expected Input Format</h3>
+                <p>Your LLM output should contain file delimiters in this format:</p>
+                <div class="example">-----filename.ext-----
+File content goes here...
+
+-----folder/another_file.ext-----
+More file content...
+
+-----folder/subfolder/deep_file.ext-----
+Nested file content...</div>
+
+                <h3><i class="fas fa-upload"></i> Step 3: Input Your Data</h3>
+                <p>You can either:</p>
+                <ul>
+                    <li><strong>Paste directly:</strong> Copy the AI response and paste it into the textarea</li>
+                    <li><strong>Upload a file:</strong> Save the AI response as a .txt file and upload it</li>
+                </ul>
+
+                <h3><i class="fas fa-cogs"></i> Step 4: Process and Download</h3>
+                <ol>
+                    <li>Click "Process Input" to parse the files</li>
+                    <li>Browse the generated file tree to preview content</li>
+                    <li>Optionally change the folder name</li>
+                    <li>Click "Download ZIP" to get your organized files</li>
+                </ol>
+
+                <h3><i class="fas fa-lightbulb"></i> Tips</h3>
+                <ul>
+                    <li>The tool automatically creates nested folder structures based on the file paths</li>
+                    <li>All folders are expanded by default for easy browsing</li>
+                    <li>Click on any file in the tree to preview its content</li>
+                    <li>The folder name can be customized before downloading</li>
+                </ul>
+
+                <h3><i class="fas fa-exclamation-triangle"></i> Troubleshooting</h3>
+                <ul>
+                    <li>If no files are found, ensure your input contains the correct <code>-----filename-----</code> delimiters</li>
+                    <li>File paths should use forward slashes (<code>/</code>) for folders</li>
+                    <li>Make sure there's content between each delimiter pair</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i> Copied to clipboard!
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const textInput = document.getElementById('text-input');
+            const fileUpload = document.getElementById('file-upload');
+            const processBtn = document.getElementById('process-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const rootFolderInput = document.getElementById('root-folder');
+            const fileTree = document.getElementById('file-tree');
+            const previewContent = document.getElementById('preview-content');
+            const settingsPanel = document.getElementById('settings-panel');
+            const toggleSettings = document.getElementById('toggle-settings');
+            const toggleLabel = document.getElementById('toggle-label');
+            const copyPromptBtn = document.getElementById('copy-prompt-btn');
+            const howToUseBtn = document.getElementById('how-to-use-btn');
+            const helpModal = document.getElementById('help-modal');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const notification = document.getElementById('notification');
+            const fileName = document.getElementById('file-name');
+            
+            // Store parsed files
+            let extractedFiles = [];
+            let activeFile = null;
+            
+            // Hide notification by default
+            notification.style.transform = 'translateX(-50%) translateY(100px)';
+            
+            // Handle file upload display
+            fileUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileName.textContent = file.name;
+                    const reader = new FileReader();
+                    reader.onload = function(eventReader) {
+                        textInput.value = eventReader.target.result;
+                    };
+                    reader.readAsText(file);
+                } else {
+                    fileName.textContent = '';
+                }
+            });
+            
+            // Copy Prompt button functionality
+            copyPromptBtn.addEventListener('click', function() {
+                const promptText = "IMPORTANT: If you choose to structure the output as multiple files, please output the code of all files in a SINGLE code block, inserting the names of files between before them as -----filename.ext----- or somefolder/filename.ext, somefolder/anotherfolder/filename.ext, and so on. Thank you very much.";
+                
+                navigator.clipboard.writeText(promptText).then(() => {
+                    // Show notification
+                    notification.classList.add('visible');
+                    
+                    // Hide after 2 seconds
+                    setTimeout(() => {
+                        notification.classList.remove('visible');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            });
+            
+            // How to Use button functionality
+            howToUseBtn.addEventListener('click', function() {
+                helpModal.style.display = 'block';
+                helpModal.classList.add('show');
+            });
+            
+            // Modal close functionality
+            function closeModal() {
+                helpModal.classList.remove('show');
+                setTimeout(() => {
+                    helpModal.style.display = 'none';
+                }, 300);
+            }
+            
+            modalCloseBtn.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside
+            helpModal.addEventListener('click', function(e) {
+                if (e.target === helpModal) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal with ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && helpModal.style.display === 'block') {
+                    closeModal();
+                }
+            });
+            
+            // Toggle settings panel
+            toggleSettings.addEventListener('click', function() {
+                settingsPanel.classList.toggle('collapsed');
+                
+                // Update toggle label text
+                if (settingsPanel.classList.contains('collapsed')) {
+                    toggleLabel.textContent = 'Expand';
+                } else {
+                    toggleLabel.textContent = 'Collapse';
+                }
+            });
+            
+            // Process button click handler
+            processBtn.addEventListener('click', function() {
+                const inputText = textInput.value.trim();
+                if (!inputText) {
+                    alert('Please provide input text or upload a file.');
+                    return;
+                }
+                
+                extractedFiles = parseInputText(inputText);
+                
+                if (extractedFiles.length === 0) {
+                    alert('No files found. Make sure your input contains patterns like "-----filename.ext-----"');
+                    return;
+                }
+                
+                renderFileTree(extractedFiles);
+                downloadBtn.disabled = false;
+                
+                // Collapse settings panel if not already collapsed
+                if (!settingsPanel.classList.contains('collapsed')) {
+                    settingsPanel.classList.add('collapsed');
+                    toggleLabel.textContent = 'Expand';
+                }
+                
+                // Clear preview
+                previewContent.innerHTML = '<div class="no-preview"><i class="fas fa-file-alt"></i> Select a file to preview content</div>';
+            });
+            
+            // Download button click handler
+            downloadBtn.addEventListener('click', function() {
+                if (extractedFiles.length === 0) {
+                    alert('No files to download. Please process input first.');
+                    return;
+                }
+                
+                const rootFolderName = rootFolderInput.value.trim() || 'project';
+                createAndDownloadZip(extractedFiles, rootFolderName);
+            });
+            
+            // Parse input text to extract files
+            function parseInputText(text) {
+                const files = [];
+                const filePattern = /-----(.+?)-----/g;
+                
+                let match;
+                let lastMatchIndex = 0;
+                let lastFilePath = null;
+                
+                while ((match = filePattern.exec(text)) !== null) {
+                    // If this isn't the first match, save the content of the previous file
+                    if (lastFilePath !== null) {
+                        const content = text.substring(lastMatchIndex, match.index).trim();
+                        files.push({
+                            path: lastFilePath,
+                            content: content
+                        });
+                    }
+                    
+                    // Save this file path for next iteration
+                    lastFilePath = match[1].trim();
+                    lastMatchIndex = match.index + match[0].length;
+                }
+                
+                // Don't forget the last file
+                if (lastFilePath !== null) {
+                    const content = text.substring(lastMatchIndex).trim();
+                    files.push({
+                        path: lastFilePath,
+                        content: content
+                    });
+                }
+                
+                return files;
+            }
+            
+            // Create a hierarchical file structure
+            function createFileStructure(files) {
+                const structure = {};
+                
+                files.forEach(file => {
+                    const pathParts = file.path.split('/');
+                    let current = structure;
+                    
+                    // Navigate through the path parts to build the structure
+                    for (let i = 0; i < pathParts.length - 1; i++) {
+                        const part = pathParts[i];
+                        if (!current[part]) {
+                            current[part] = {};
+                        }
+                        current = current[part];
+                    }
+                    
+                    // Set the file content at the final location
+                    const fileName = pathParts[pathParts.length - 1];
+                    current[fileName] = file.content;
+                });
+                
+                return structure;
+            }
+            
+            // Render the file tree in the UI
+            function renderFileTree(files) {
+                fileTree.innerHTML = '';
+                const structure = createFileStructure(files);
+                const rootFolderName = rootFolderInput.value.trim() || 'project';
+                
+                // Create root folder container
+                const rootDiv = document.createElement('div');
+                rootDiv.className = 'folder';
+                
+                const rootHeader = document.createElement('div');
+                rootHeader.className = 'folder-header';
+                rootHeader.innerHTML = `<span class="folder-icon"><i class="fas fa-folder-open"></i></span> ${rootFolderName}`;
+                rootHeader.style.fontWeight = 'bold';
+                
+                const rootContent = document.createElement('div');
+                rootContent.className = 'folder-content';
+                rootContent.style.display = 'block';
+                
+                // Toggle functionality for root folder
+                rootHeader.onclick = function(event) {
+                    event.stopPropagation();
+                    rootContent.style.display = rootContent.style.display === 'block' ? 'none' : 'block';
+                    const icon = rootHeader.querySelector('.folder-icon i');
+                    if (rootContent.style.display === 'block') {
+                        icon.className = 'fas fa-folder-open';
+                    } else {
+                        icon.className = 'fas fa-folder';
+                    }
+                };
+                
+                rootDiv.appendChild(rootHeader);
+                rootDiv.appendChild(rootContent);
+                fileTree.appendChild(rootDiv);
+                
+                // Recursive function to build the tree UI
+                function buildTreeUI(obj, container, path = '') {
+                    for (const key in obj) {
+                        const fullPath = path ? `${path}/${key}` : key;
+                        
+                        if (typeof obj[key] === 'string') {
+                            // This is a file
+                            const fileDiv = document.createElement('div');
+                            fileDiv.className = 'file';
+                            fileDiv.dataset.path = fullPath;
+                            
+                            const fileHeader = document.createElement('div');
+                            fileHeader.className = 'file-header';
+                            fileHeader.innerHTML = `<span class="file-icon"><i class="fas fa-file-code"></i></span> ${key}`;
+                            
+                            // Preview file on click
+                            fileHeader.onclick = function() {
+                                // Remove active class from previous file
+                                const activeElements = document.querySelectorAll('.file-header.active');
+                                activeElements.forEach(el => el.classList.remove('active'));
+                                
+                                // Add active class to this file
+                                fileHeader.classList.add('active');
+                                
+                                // Show file preview
+                                previewContent.innerHTML = `
+                                    <h3><i class="fas fa-file-code"></i> ${fullPath}</h3>
+                                    <div class="file-preview">${escapeHtml(obj[key])}</div>
+                                `;
+                                
+                                activeFile = { path: fullPath, content: obj[key] };
+                            };
+                            
+                            fileDiv.appendChild(fileHeader);
+                            container.appendChild(fileDiv);
+                        } else {
+                            // This is a folder
+                            const folderDiv = document.createElement('div');
+                            folderDiv.className = 'folder';
+                            
+                            const folderHeader = document.createElement('div');
+                            folderHeader.className = 'folder-header';
+                            folderHeader.innerHTML = `<span class="folder-icon"><i class="fas fa-folder-open"></i></span> ${key}`;
+                            
+                            const folderContent = document.createElement('div');
+                            folderContent.className = 'folder-content';
+                            folderContent.style.display = 'block';
+                            
+                            folderHeader.onclick = function(eventFolder) {
+                                eventFolder.stopPropagation();
+                                folderContent.style.display = folderContent.style.display === 'block' ? 'none' : 'block';
+                                // Toggle folder icon
+                                const icon = folderHeader.querySelector('.folder-icon i');
+                                if (folderContent.style.display === 'block') {
+                                    icon.className = 'fas fa-folder-open';
+                                } else {
+                                    icon.className = 'fas fa-folder';
+                                }
+                            };
+                            
+                            folderDiv.appendChild(folderHeader);
+                            folderDiv.appendChild(folderContent);
+                            container.appendChild(folderDiv);
+                            
+                            // Recursively build children
+                            buildTreeUI(obj[key], folderContent, fullPath);
+                        }
+                    }
+                }
+                
+                buildTreeUI(structure, rootContent);
+            }
+            
+            // Helper function to escape HTML in code snippets
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            
+            // Create and download a zip file
+            function createAndDownloadZip(files, rootFolderName) {
+                const zip = new JSZip();
+                const rootFolder = zip.folder(rootFolderName);
+                
+                files.forEach(file => {
+                    // Add file to the zip at the correct path
+                    rootFolder.file(file.path, file.content);
+                });
+                
+                // Generate the zip file and trigger download
+                zip.generateAsync({type: 'blob'})
+                    .then(function(content) {
+                        saveAs(content, `${rootFolderName}.zip`);
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
